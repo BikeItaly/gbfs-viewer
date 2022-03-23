@@ -1,14 +1,11 @@
-
 // Map creation
-const mainMap = L.map('mainMap').setView([32.0795, 34.7812], 14);
-
-const tiles = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-    id: 'mapbox.streets',
-    accessToken: 'pk.eyJ1IjoiaWRvY28iLCJhIjoiY2ptM2JnbW5lMGN6czN2bW14NXUzMGZ2YyJ9.xIvjUlL3cPhak8p0ucOnxg'
-}).addTo(mainMap);
+const mainMap = L.map('mainMap').setView([32.0879, 34.7934], 13);
+const tiles = L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {}).addTo(mainMap);
 
 let currentMarkerGroup; // the currently displayed marker layer 
 let currentBikesUrl = "https://mds.bird.co/gbfs/tel-aviv/free_bikes";
+//let currentBikesUrl = "https://api.helbiz.com/admin/reporting/palermo/gbfs/gbfs.json";
+var hash = new L.Hash(mainMap);
 
 // Some GBFS systems do not support cross origin requests
 async function fetchWithCors(url) {
@@ -25,7 +22,7 @@ async function refreshBikes(url) {
     document.getElementById("loader").style.display = "block"
     try {
         if (currentMarkerGroup) { // clear current markers before showing new
-            mainMap.removeLayer(currentMarkerGroup); 
+            mainMap.removeLayer(currentMarkerGroup);
         }
         let bikes = await loadBikes(url);
         await showBikes(bikes)
@@ -50,7 +47,7 @@ async function showBikes(bikes) {
     }
 
     document.getElementById('bike-count').textContent = bikes.length || 'N/A'
-    
+
     currentMarkerGroup = L.featureGroup(markers).addTo(mainMap);
     mainMap.fitBounds(currentMarkerGroup.getBounds());
 }
@@ -76,7 +73,7 @@ async function main() {
         selectSystem.appendChild(el);
     }
 
-    selectSystem.addEventListener("change", async () => {
+    selectSystem.addEventListener("change", async() => {
         document.getElementById("loader").style.display = "block"
 
         const selectedIndex = document.getElementById("select-system").selectedIndex;
@@ -103,6 +100,7 @@ async function main() {
 
     // Load bird Tel aviv on launch
     await refreshBikes('https://mds.bird.co/gbfs/tel-aviv/free_bikes')
+        //await refreshBikes('https://api.helbiz.com/admin/reporting/palermo/gbfs/gbfs.json')
 }
 
 main();
